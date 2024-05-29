@@ -1,0 +1,25 @@
+***********************
+* PART 4 - Summary *
+***********************
+
+
+The SokobanBoard1 run time in iteration number 1 is 0.11478376388549805 seconds.
+The SokobanBoard1 total run time is 0.11478376388549805 seconds, the numbers of iterations for solving is 1, and the winning solution (LURD Format) is: r.
+
+
+The SokobanBoard4 run time in iteration number 1 is 0.2652876377105713 seconds.
+The SokobanBoard4 run time in iteration number 2 is 0.27224230766296387 seconds.
+The SokobanBoard4 run time in iteration number 3 is 0.2593073844909668 seconds.
+The SokobanBoard4 run time in iteration number 4 is 0.2982017993927002 seconds.
+The SokobanBoard4 total run time is 1.0950391292572021 seconds, the numbers of iterations for solving is 4, and the winning solution (LURD Format) is: lrudrld.
+
+
+The SokobanBoard7 run time in iteration number 1 is 9.257713794708252 seconds.
+The SokobanBoard7 total run time is 9.257713794708252 seconds, the numbers of iterations for solving is 1, and the winning solution (LURD Format) is: llurrrrrdru.
+
+
+The SokobanBoard8 run time in iteration number 1 is 2.614670991897583 seconds.
+The SokobanBoard8 run time in iteration number 2 is 4.164114713668823 seconds.
+The SokobanBoard8 run time in iteration number 3 is 47.350558280944824 seconds.
+The SokobanBoard8 total run time is 54.12934398651123 seconds, the numbers of iterations for solving is 3, and the winning solution (LURD Format) is: luuurrdrrddrdddrulullllulurrrrdru.
+

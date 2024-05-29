@@ -1,0 +1,308 @@
+*** This is nuXmv 2.0.0 (compiled on Mon Oct 14 18:05:39 2019)
+*** Copyright (c) 2014-2019, Fondazione Bruno Kessler
+*** For more information on nuXmv see https://nuxmv.fbk.eu
+*** or email to <nuxmv@list.fbk.eu>.
+*** Please report bugs at https://nuxmv.fbk.eu/bugs
+*** (click on "Login Anonymously" to access)
+*** Alternatively write to <nuxmv@list.fbk.eu>.
+
+*** This version of nuXmv is linked to NuSMV 2.6.0.
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Copyright (C) 2010-2019, Fondazione Bruno Kessler
+
+*** This version of nuXmv is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of nuXmv is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+*** This version of nuXmv is linked to MathSAT
+*** Copyright (C) 2009-2019 by Fondazione Bruno Kessler
+*** Copyright (C) 2009-2019 by University of Trento and others
+*** See http://mathsat.fbk.eu
+
+nuXmv > nuXmv > -- no counterexample found with bound 0
+-- no counterexample found with bound 1
+-- no counterexample found with bound 2
+-- no counterexample found with bound 3
+-- no counterexample found with bound 4
+-- no counterexample found with bound 5
+-- no counterexample found with bound 6
+-- no counterexample found with bound 7
+-- no counterexample found with bound 8
+-- no counterexample found with bound 9
+-- no counterexample found with bound 10
+-- no counterexample found with bound 11
+-- no counterexample found with bound 12
+-- no counterexample found with bound 13
+-- no counterexample found with bound 14
+-- no counterexample found with bound 15
+-- no counterexample found with bound 16
+-- no counterexample found with bound 17
+-- no counterexample found with bound 18
+-- no counterexample found with bound 19
+-- no counterexample found with bound 20
+-- specification !( F win)    is false
+-- as demonstrated by the following execution sequence
+Trace Description: BMC Counterexample 
+Trace Type: Counterexample 
+  -> State: 1.1 <-
+    move = start
+    lOption = TRUE
+    uOption = FALSE
+    rOption = FALSE
+    dOption = TRUE
+    whLocX = 3
+    whLocY = 4
+    numCurrentGoals = 3
+    board[0][0] = wall
+    board[0][1] = wall
+    board[0][2] = wall
+    board[0][3] = wall
+    board[0][4] = wall
+    board[0][5] = wall
+    board[0][6] = wall
+    board[0][7] = wall
+    board[0][8] = wall
+    board[0][9] = wall
+    board[0][10] = wall
+    board[1][0] = wall
+    board[1][1] = floorSign
+    board[1][2] = floorSign
+    board[1][3] = box
+    board[1][4] = floorSign
+    board[1][5] = goal
+    board[1][6] = floorSign
+    board[1][7] = wall
+    board[1][8] = wall
+    board[1][9] = wall
+    board[1][10] = wall
+    board[2][0] = wall
+    board[2][1] = floorSign
+    board[2][2] = floorSign
+    board[2][3] = wall
+    board[2][4] = floorSign
+    board[2][5] = floorSign
+    board[2][6] = floorSign
+    board[2][7] = goal
+    board[2][8] = wall
+    board[2][9] = wall
+    board[2][10] = wall
+    board[3][0] = wall
+    board[3][1] = wall
+    board[3][2] = floorSign
+    board[3][3] = box
+    board[3][4] = floorSign
+    board[3][5] = floorSign
+    board[3][6] = floorSign
+    board[3][7] = floorSign
+    board[3][8] = wall
+    board[3][9] = wall
+    board[3][10] = wall
+    board[4][0] = wall
+    board[4][1] = floorSign
+    board[4][2] = floorSign
+    board[4][3] = whKeeper
+    board[4][4] = wall
+    board[4][5] = floorSign
+    board[4][6] = floorSign
+    board[4][7] = floorSign
+    board[4][8] = wall
+    board[4][9] = wall
+    board[4][10] = wall
+    board[5][0] = wall
+    board[5][1] = wall
+    board[5][2] = wall
+    board[5][3] = floorSign
+    board[5][4] = floorSign
+    board[5][5] = floorSign
+    board[5][6] = floorSign
+    board[5][7] = box
+    board[5][8] = wall
+    board[5][9] = wall
+    board[5][10] = wall
+    board[6][0] = wall
+    board[6][1] = wall
+    board[6][2] = wall
+    board[6][3] = wall
+    board[6][4] = wall
+    board[6][5] = floorSign
+    board[6][6] = floorSign
+    board[6][7] = floorSign
+    board[6][8] = floorSign
+    board[6][9] = floorSign
+    board[6][10] = wall
+    board[7][0] = wall
+    board[7][1] = wall
+    board[7][2] = wall
+    board[7][3] = wall
+    board[7][4] = wall
+    board[7][5] = wall
+    board[7][6] = wall
+    board[7][7] = floorSign
+    board[7][8] = floorSign
+    board[7][9] = floorSign
+    board[7][10] = wall
+    board[8][0] = wall
+    board[8][1] = wall
+    board[8][2] = wall
+    board[8][3] = wall
+    board[8][4] = wall
+    board[8][5] = wall
+    board[8][6] = wall
+    board[8][7] = goal
+    board[8][8] = floorSign
+    board[8][9] = floorSign
+    board[8][10] = wall
+    board[9][0] = wall
+    board[9][1] = wall
+    board[9][2] = wall
+    board[9][3] = wall
+    board[9][4] = wall
+    board[9][5] = wall
+    board[9][6] = wall
+    board[9][7] = wall
+    board[9][8] = wall
+    board[9][9] = wall
+    board[9][10] = wall
+    win = FALSE
+    m = 11
+    n = 10
+  -> State: 1.2 <-
+    move = l
+    whLocX = 2
+    numCurrentGoals = 0
+    board[4][2] = whKeeper
+    board[4][3] = floorSign
+  -> State: 1.3 <-
+    move = u
+    uOption = TRUE
+    rOption = TRUE
+    dOption = FALSE
+    whLocY = 3
+    board[3][2] = whKeeper
+    board[4][2] = floorSign
+  -> State: 1.4 <-
+    lOption = FALSE
+    dOption = TRUE
+    whLocY = 2
+    board[2][2] = whKeeper
+    board[3][2] = floorSign
+  -> State: 1.5 <-
+    lOption = TRUE
+    rOption = FALSE
+    whLocY = 1
+    board[1][2] = whKeeper
+    board[2][2] = floorSign
+  -> State: 1.6 <-
+    move = r
+    uOption = FALSE
+    rOption = TRUE
+    whLocX = 3
+    board[1][2] = floorSign
+    board[1][3] = whKeeper
+    board[1][4] = box
+  -> State: 1.7 <-
+    dOption = FALSE
+    whLocX = 4
+    board[1][3] = floorSign
+    board[1][4] = whKeeper
+    board[1][5] = boxOnGoal
+  -> State: 1.8 <-
+    move = l
+    dOption = TRUE
+    whLocX = 3
+    board[1][3] = whKeeper
+    board[1][4] = floorSign
+  -> State: 1.9 <-
+    dOption = FALSE
+    whLocX = 2
+    board[1][2] = whKeeper
+    board[1][3] = floorSign
+  -> State: 1.10 <-
+    move = d
+    dOption = TRUE
+    whLocY = 2
+    board[1][2] = floorSign
+    board[2][2] = whKeeper
+  -> State: 1.11 <-
+    uOption = TRUE
+    rOption = FALSE
+    whLocY = 3
+    board[2][2] = floorSign
+    board[3][2] = whKeeper
+  -> State: 1.12 <-
+    move = r
+    lOption = FALSE
+    rOption = TRUE
+    whLocX = 3
+    board[3][2] = floorSign
+    board[3][3] = whKeeper
+    board[3][4] = box
+  -> State: 1.13 <-
+    lOption = TRUE
+    uOption = FALSE
+    whLocX = 4
+    board[3][3] = floorSign
+    board[3][4] = whKeeper
+    board[3][5] = box
+  -> State: 1.14 <-
+    uOption = TRUE
+    dOption = FALSE
+    whLocX = 5
+    board[3][4] = floorSign
+    board[3][5] = whKeeper
+    board[3][6] = box
+  -> State: 1.15 <-
+    dOption = TRUE
+    whLocX = 6
+    board[3][5] = floorSign
+    board[3][6] = whKeeper
+    board[3][7] = box
+  -> State: 1.16 <-
+    move = d
+    rOption = FALSE
+    whLocY = 4
+    board[3][6] = floorSign
+    board[4][6] = whKeeper
+  -> State: 1.17 <-
+    move = r
+    rOption = TRUE
+    whLocX = 7
+    board[4][6] = floorSign
+    board[4][7] = whKeeper
+  -> State: 1.18 <-
+    move = u
+    rOption = FALSE
+    whLocY = 3
+    board[2][7] = boxOnGoal
+    board[3][7] = whKeeper
+    board[4][7] = floorSign
+  -> State: 1.19 <-
+    move = d
+    uOption = FALSE
+    whLocY = 4
+    board[3][7] = floorSign
+    board[4][7] = whKeeper
+  -> State: 1.20 <-
+    uOption = TRUE
+    whLocY = 5
+    board[4][7] = floorSign
+    board[5][7] = whKeeper
+    board[6][7] = box
+  -> State: 1.21 <-
+    whLocY = 6
+    board[5][7] = floorSign
+    board[6][7] = whKeeper
+    board[7][7] = box
+  -> State: 1.22 <-
+    rOption = TRUE
+    whLocY = 7
+    board[6][7] = floorSign
+    board[7][7] = whKeeper
+    board[8][7] = boxOnGoal
+    win = TRUE
+nuXmv > 

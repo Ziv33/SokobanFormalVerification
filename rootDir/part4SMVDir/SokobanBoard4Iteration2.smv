@@ -1,0 +1,1068 @@
+MODULE main
+
+DEFINE
+	n := 7; m := 7;
+	numOriginalGoals := 3;
+	win := (board[0][0] != box) & (board[0][1] != box) & (board[0][2] != box) & (board[0][3] != box) & (board[0][4] != box) & (board[0][5] != box) & (board[0][6] != box) & (board[1][0] != box) & (board[1][1] != box) & (board[1][2] != box) & (board[1][3] != box) & (board[1][4] != box) & (board[1][5] != box) & (board[1][6] != box) & (board[2][0] != box) & (board[2][1] != box) & (board[2][2] != box) & (board[2][3] != box) & (board[2][4] != box) & (board[2][5] != box) & (board[2][6] != box) & (board[3][0] != box) & (board[3][1] != box) & (board[3][2] != box) & (board[3][3] != box) & (board[3][4] != box) & (board[3][5] != box) & (board[3][6] != box) & (board[4][0] != box) & (board[4][1] != box) & (board[4][2] != box) & (board[4][3] != box) & (board[4][4] != box) & (board[4][5] != box) & (board[4][6] != box) & (board[5][0] != box) & (board[5][1] != box) & (board[5][2] != box) & (board[5][3] != box) & (board[5][4] != box) & (board[5][5] != box) & (board[5][6] != box) & (board[6][0] != box) & (board[6][1] != box) & (board[6][2] != box) & (board[6][3] != box) & (board[6][4] != box) & (board[6][5] != box) & (board[6][6] != box);
+
+VAR
+	move: {start, l, u, r, d};
+	lOption: boolean;
+	uOption: boolean;
+	rOption: boolean;
+	dOption: boolean;
+	whLocX: {0, 1, 2, 3, 4, 5, 6};
+	whLocY: {0, 1, 2, 3, 4, 5, 6};
+	numCurrentGoals: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49};
+	board: array 0..6 of array 0..6 of {whKeeper, whKeeperOnGoal, box, boxOnGoal, wall, goal, floorSign};
+
+ASSIGN
+	init(board[0][0]) := wall;
+	init(board[0][1]) := wall;
+	init(board[0][2]) := wall;
+	init(board[0][3]) := wall;
+	init(board[0][4]) := wall;
+	init(board[0][5]) := wall;
+	init(board[0][6]) := wall;
+	init(board[1][0]) := wall;
+	init(board[1][1]) := wall;
+	init(board[1][2]) := wall;
+	init(board[1][3]) := goal;
+	init(board[1][4]) := wall;
+	init(board[1][5]) := wall;
+	init(board[1][6]) := wall;
+	init(board[2][0]) := wall;
+	init(board[2][1]) := wall;
+	init(board[2][2]) := wall;
+	init(board[2][3]) := box;
+	init(board[2][4]) := wall;
+	init(board[2][5]) := wall;
+	init(board[2][6]) := wall;
+	init(board[3][0]) := wall;
+	init(board[3][1]) := boxOnGoal;
+	init(board[3][2]) := floorSign;
+	init(board[3][3]) := whKeeper;
+	init(board[3][4]) := box;
+	init(board[3][5]) := goal;
+	init(board[3][6]) := wall;
+	init(board[4][0]) := wall;
+	init(board[4][1]) := wall;
+	init(board[4][2]) := wall;
+	init(board[4][3]) := box;
+	init(board[4][4]) := wall;
+	init(board[4][5]) := wall;
+	init(board[4][6]) := wall;
+	init(board[5][0]) := wall;
+	init(board[5][1]) := wall;
+	init(board[5][2]) := wall;
+	init(board[5][3]) := goal;
+	init(board[5][4]) := wall;
+	init(board[5][5]) := wall;
+	init(board[5][6]) := wall;
+	init(board[6][0]) := wall;
+	init(board[6][1]) := wall;
+	init(board[6][2]) := wall;
+	init(board[6][3]) := wall;
+	init(board[6][4]) := wall;
+	init(board[6][5]) := wall;
+	init(board[6][6]) := wall;
+
+	init(move) := start;
+	init(whLocX) := 3;
+	init(whLocY) := 3;
+
+	init(numCurrentGoals) := 3;
+
+	init(lOption) := (board[3][2] = floorSign) | (board[3][2] = goal) | (board[3][2] = boxOnGoal & board[3][1] = floorSign) | (board[3][2] = boxOnGoal & board[3][1] = goal) | (board[3][2] = box & board[3][1] = floorSign) | (board[3][2] = box & board[3][1] = goal);
+	init(uOption) := (board[2][3] = floorSign) | (board[2][3] = goal) | (board[2][3] = boxOnGoal & board[1][3] = floorSign) | (board[2][3] = boxOnGoal & board[1][3] = goal) | (board[2][3] = box & board[1][3] = floorSign) | (board[2][3] = box & board[1][3] = goal);
+	init(rOption) := (board[3][4] = floorSign) | (board[3][4] = goal) | (board[3][4] = boxOnGoal & board[3][5] = floorSign) | (board[3][4] = boxOnGoal & board[3][5] = goal) | (board[3][4] = box & board[3][5] = floorSign) | (board[3][4] = box & board[3][5] = goal);
+	init(dOption) := (board[4][3] = floorSign) | (board[4][3] = goal) | (board[4][3] = boxOnGoal & board[5][3] = floorSign) | (board[4][3] = boxOnGoal & board[5][3] = goal) | (board[4][3] = box & board[5][3] = floorSign) | (board[4][3] = box & board[5][3] = goal);
+	next(lOption) := case
+		(whLocX <= 1) : FALSE;
+		(whLocX = 2) : board[whLocY][self.whLocX - 1] = floorSign | board[whLocY][whLocX - 1] = goal;
+		(whLocX >= 3) : (board[whLocY][whLocX - 1] = floorSign) | (board[whLocY][whLocX - 1] = goal) | (board[whLocY][whLocX - 1] = boxOnGoal & board[whLocY][whLocX - 2] = floorSign) | (board[whLocY][whLocX - 1] = boxOnGoal & board[whLocY][whLocX - 2] = goal) | (board[whLocY][whLocX - 1] = box & board[whLocY][whLocX - 2] = floorSign) | (board[whLocY][whLocX - 1] = box & board[whLocY][whLocX - 2] = goal);
+		TRUE : FALSE;
+	esac;
+
+	next(uOption) := case
+		(whLocY <= 1) : FALSE;
+		(whLocY = 2) : board[whLocY - 1][whLocX] = floorSign | board[whLocY - 1][self.whLocX] = goal;
+		(whLocY >= 3) : (board[whLocY - 1][whLocX] = floorSign) | (board[whLocY - 1][whLocX] = goal) | (board[whLocY - 1][whLocX] = boxOnGoal & board[whLocY - 2][whLocX] = floorSign) | (board[whLocY - 1][whLocX] = boxOnGoal & board[whLocY - 2][whLocX] = goal) | (board[whLocY - 1][whLocX] = box & board[whLocY - 2][whLocX] = floorSign) | (board[whLocY - 1][whLocX] = box & board[whLocY - 2][whLocX] = goal);
+		TRUE : FALSE;
+	esac;
+
+	next(rOption) := case
+		(whLocX >= m - 2) : FALSE;
+		(whLocX = m - 3) : board[whLocY][whLocX + 1] = floorSign | board[whLocY][whLocX + 1] = goal;
+		(whLocX <= m - 4) : (board[whLocY][whLocX + 1] = floorSign) | (board[whLocY][whLocX + 1] = goal) | (board[whLocY][whLocX + 1] = boxOnGoal & board[whLocY][whLocX + 2] = floorSign) | (board[whLocY][whLocX + 1] = boxOnGoal & board[whLocY][whLocX + 2] = goal) | (board[whLocY][whLocX + 1] = box & board[whLocY][whLocX + 2] = floorSign) | (board[whLocY][whLocX + 1] = box & board[whLocY][whLocX + 2] = goal);
+		TRUE : FALSE;
+	esac;
+
+	next(dOption) := case
+		(whLocY >= n - 2) : FALSE;
+		(whLocY = n - 3) : board[whLocY + 1][whLocX] = floorSign | board[whLocY + 1][whLocX] = goal;
+		(whLocY <= n - 4) : (board[whLocY + 1][whLocX] = floorSign) | (board[whLocY + 1][whLocX] = goal) | (board[whLocY + 1][whLocX] = boxOnGoal & board[whLocY + 2][whLocX] = floorSign) | (board[whLocY + 1][whLocX] = boxOnGoal & board[whLocY + 2][whLocX] = goal) | (board[whLocY + 1][whLocX] = box & board[whLocY + 2][whLocX] = floorSign) | (board[whLocY + 1][whLocX] = box & board[whLocY + 2][whLocX] = goal);
+		TRUE : FALSE;
+	esac;
+
+	next(whLocX) := case
+		(next(move) = r) & (whLocX < m - 1) : whLocX + 1;
+		(next(move) = l) & (whLocX > 0) : whLocX - 1;
+		TRUE : whLocX;
+	esac;
+
+	next(whLocY) := case
+		(next(move) = d) & (whLocY < n - 1) : whLocY + 1;
+		(next(move) = u) & (whLocY > 0) : whLocY - 1;
+		TRUE : whLocY;
+	esac;
+
+	next(move) := case
+		next(lOption) & next(uOption) & next(rOption) & next(dOption) : {l, u, r, d};
+		next(lOption) & next(uOption) & next(rOption) : {l, u, r};
+		next(lOption) & next(uOption) & next(dOption) : {l, u, d};
+		next(lOption) & next(rOption) & next(dOption) : {l, r, d};
+		next(uOption) & next(rOption) & next(dOption) : {u, r, d};
+		next(lOption) & next(uOption) : {l, u};
+		next(lOption) & next(rOption) : {l, r};
+		next(lOption) & next(dOption) : {l, d};
+		next(uOption) & next(rOption) : {u, r};
+		next(uOption) & next(dOption) : {u, d};
+		next(rOption) & next(dOption) : {r, d};
+		next(lOption) : {l};
+		next(uOption) : {u};
+		next(rOption) : {r};
+		next(dOption) : {d};
+		TRUE : start;
+	esac;
+
+	next(board[0][0]) := case
+		(whLocY = 0) & (whLocX = 0) & (board[0][0] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 0) & (whLocX = 0) & (board[0][0] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 0) & ((board[0][0] = floorSign) | (board[0][0] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 1) & (whLocX = 0) & ((board[0][0] = goal) | (board[0][0] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 0) & ((board[1][0] = boxOnGoal) | (board[1][0] = box)) & (board[0][0] = floorSign) & (next(move) = u) : box;
+		(whLocY = 2) & (whLocX = 0) & ((board[1][0] = boxOnGoal) | (board[1][0] = box)) & (board[0][0] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 1) & ((board[0][0] = floorSign) | (board[0][0] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 0) & (whLocX = 1) & ((board[0][0] = goal) | (board[0][0] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][1] = boxOnGoal) | (board[0][1] = box)) & (board[0][0] = floorSign) & (next(move) = l) : box;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][1] = boxOnGoal) | (board[0][1] = box)) & (board[0][0] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[0][0];
+	esac;
+
+	next(board[0][1]) := case
+		(whLocY = 0) & (whLocX = 1) & (board[0][1] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 0) & (whLocX = 1) & (board[0][1] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 1) & ((board[0][1] = floorSign) | (board[0][1] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 1) & (whLocX = 1) & ((board[0][1] = goal) | (board[0][1] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 1) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[0][1] = floorSign) & (next(move) = u) : box;
+		(whLocY = 2) & (whLocX = 1) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[0][1] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 0) & ((board[0][1] = floorSign) | (board[0][1] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 0) & (whLocX = 0) & ((board[0][1] = goal) | (board[0][1] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][1] = floorSign) | (board[0][1] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][1] = goal) | (board[0][1] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][2] = boxOnGoal) | (board[0][2] = box)) & (board[0][1] = floorSign) & (next(move) = l) : box;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][2] = boxOnGoal) | (board[0][2] = box)) & (board[0][1] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[0][1];
+	esac;
+
+	next(board[0][2]) := case
+		(whLocY = 0) & (whLocX = 2) & (board[0][2] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 0) & (whLocX = 2) & (board[0][2] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 2) & ((board[0][2] = floorSign) | (board[0][2] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 1) & (whLocX = 2) & ((board[0][2] = goal) | (board[0][2] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 2) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[0][2] = floorSign) & (next(move) = u) : box;
+		(whLocY = 2) & (whLocX = 2) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[0][2] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 1) & ((board[0][2] = floorSign) | (board[0][2] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 0) & (whLocX = 1) & ((board[0][2] = goal) | (board[0][2] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 0) & ((board[0][1] = boxOnGoal) | (board[0][1] = box)) & (board[0][2] = floorSign) & (next(move) = r) : box;
+		(whLocY = 0) & (whLocX = 0) & ((board[0][1] = boxOnGoal) | (board[0][1] = box)) & (board[0][2] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][2] = floorSign) | (board[0][2] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][2] = goal) | (board[0][2] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][3] = boxOnGoal) | (board[0][3] = box)) & (board[0][2] = floorSign) & (next(move) = l) : box;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][3] = boxOnGoal) | (board[0][3] = box)) & (board[0][2] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[0][2];
+	esac;
+
+	next(board[0][3]) := case
+		(whLocY = 0) & (whLocX = 3) & (board[0][3] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 0) & (whLocX = 3) & (board[0][3] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 3) & ((board[0][3] = floorSign) | (board[0][3] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 1) & (whLocX = 3) & ((board[0][3] = goal) | (board[0][3] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 3) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[0][3] = floorSign) & (next(move) = u) : box;
+		(whLocY = 2) & (whLocX = 3) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[0][3] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][3] = floorSign) | (board[0][3] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][3] = goal) | (board[0][3] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 1) & ((board[0][2] = boxOnGoal) | (board[0][2] = box)) & (board[0][3] = floorSign) & (next(move) = r) : box;
+		(whLocY = 0) & (whLocX = 1) & ((board[0][2] = boxOnGoal) | (board[0][2] = box)) & (board[0][3] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][3] = floorSign) | (board[0][3] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][3] = goal) | (board[0][3] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 5) & ((board[0][4] = boxOnGoal) | (board[0][4] = box)) & (board[0][3] = floorSign) & (next(move) = l) : box;
+		(whLocY = 0) & (whLocX = 5) & ((board[0][4] = boxOnGoal) | (board[0][4] = box)) & (board[0][3] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[0][3];
+	esac;
+
+	next(board[0][4]) := case
+		(whLocY = 0) & (whLocX = 4) & (board[0][4] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 0) & (whLocX = 4) & (board[0][4] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 4) & ((board[0][4] = floorSign) | (board[0][4] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 1) & (whLocX = 4) & ((board[0][4] = goal) | (board[0][4] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 4) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[0][4] = floorSign) & (next(move) = u) : box;
+		(whLocY = 2) & (whLocX = 4) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[0][4] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][4] = floorSign) | (board[0][4] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][4] = goal) | (board[0][4] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][3] = boxOnGoal) | (board[0][3] = box)) & (board[0][4] = floorSign) & (next(move) = r) : box;
+		(whLocY = 0) & (whLocX = 2) & ((board[0][3] = boxOnGoal) | (board[0][3] = box)) & (board[0][4] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 5) & ((board[0][4] = floorSign) | (board[0][4] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 0) & (whLocX = 5) & ((board[0][4] = goal) | (board[0][4] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 6) & ((board[0][5] = boxOnGoal) | (board[0][5] = box)) & (board[0][4] = floorSign) & (next(move) = l) : box;
+		(whLocY = 0) & (whLocX = 6) & ((board[0][5] = boxOnGoal) | (board[0][5] = box)) & (board[0][4] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[0][4];
+	esac;
+
+	next(board[0][5]) := case
+		(whLocY = 0) & (whLocX = 5) & (board[0][5] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 0) & (whLocX = 5) & (board[0][5] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 5) & ((board[0][5] = floorSign) | (board[0][5] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 1) & (whLocX = 5) & ((board[0][5] = goal) | (board[0][5] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 5) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[0][5] = floorSign) & (next(move) = u) : box;
+		(whLocY = 2) & (whLocX = 5) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[0][5] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][5] = floorSign) | (board[0][5] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][5] = goal) | (board[0][5] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][4] = boxOnGoal) | (board[0][4] = box)) & (board[0][5] = floorSign) & (next(move) = r) : box;
+		(whLocY = 0) & (whLocX = 3) & ((board[0][4] = boxOnGoal) | (board[0][4] = box)) & (board[0][5] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 6) & ((board[0][5] = floorSign) | (board[0][5] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 0) & (whLocX = 6) & ((board[0][5] = goal) | (board[0][5] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		TRUE : board[0][5];
+	esac;
+
+	next(board[0][6]) := case
+		(whLocY = 0) & (whLocX = 6) & (board[0][6] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 0) & (whLocX = 6) & (board[0][6] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 6) & ((board[0][6] = floorSign) | (board[0][6] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 1) & (whLocX = 6) & ((board[0][6] = goal) | (board[0][6] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 6) & ((board[1][6] = boxOnGoal) | (board[1][6] = box)) & (board[0][6] = floorSign) & (next(move) = u) : box;
+		(whLocY = 2) & (whLocX = 6) & ((board[1][6] = boxOnGoal) | (board[1][6] = box)) & (board[0][6] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 0) & (whLocX = 5) & ((board[0][6] = floorSign) | (board[0][6] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 0) & (whLocX = 5) & ((board[0][6] = goal) | (board[0][6] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][5] = boxOnGoal) | (board[0][5] = box)) & (board[0][6] = floorSign) & (next(move) = r) : box;
+		(whLocY = 0) & (whLocX = 4) & ((board[0][5] = boxOnGoal) | (board[0][5] = box)) & (board[0][6] = goal) & (next(move) = r) : boxOnGoal;
+		TRUE : board[0][6];
+	esac;
+
+	next(board[1][0]) := case
+		(whLocY = 1) & (whLocX = 0) & (board[1][0] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 1) & (whLocX = 0) & (board[1][0] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 0) & (whLocX = 0) & ((board[1][0] = floorSign) | (board[1][0] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 0) & (whLocX = 0) & ((board[1][0] = goal) | (board[1][0] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 0) & ((board[1][0] = floorSign) | (board[1][0] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 2) & (whLocX = 0) & ((board[1][0] = goal) | (board[1][0] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 0) & ((board[2][0] = boxOnGoal) | (board[2][0] = box)) & (board[1][0] = floorSign) & (next(move) = u) : box;
+		(whLocY = 3) & (whLocX = 0) & ((board[2][0] = boxOnGoal) | (board[2][0] = box)) & (board[1][0] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 1) & ((board[1][0] = floorSign) | (board[1][0] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 1) & (whLocX = 1) & ((board[1][0] = goal) | (board[1][0] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[1][0] = floorSign) & (next(move) = l) : box;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[1][0] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[1][0];
+	esac;
+
+	next(board[1][1]) := case
+		(whLocY = 1) & (whLocX = 1) & (board[1][1] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 1) & (whLocX = 1) & (board[1][1] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 0) & (whLocX = 1) & ((board[1][1] = floorSign) | (board[1][1] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 0) & (whLocX = 1) & ((board[1][1] = goal) | (board[1][1] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 1) & ((board[1][1] = floorSign) | (board[1][1] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 2) & (whLocX = 1) & ((board[1][1] = goal) | (board[1][1] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 1) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[1][1] = floorSign) & (next(move) = u) : box;
+		(whLocY = 3) & (whLocX = 1) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[1][1] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 0) & ((board[1][1] = floorSign) | (board[1][1] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 1) & (whLocX = 0) & ((board[1][1] = goal) | (board[1][1] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][1] = floorSign) | (board[1][1] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][1] = goal) | (board[1][1] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[1][1] = floorSign) & (next(move) = l) : box;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[1][1] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[1][1];
+	esac;
+
+	next(board[1][2]) := case
+		(whLocY = 1) & (whLocX = 2) & (board[1][2] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 1) & (whLocX = 2) & (board[1][2] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 0) & (whLocX = 2) & ((board[1][2] = floorSign) | (board[1][2] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 0) & (whLocX = 2) & ((board[1][2] = goal) | (board[1][2] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 2) & ((board[1][2] = floorSign) | (board[1][2] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 2) & (whLocX = 2) & ((board[1][2] = goal) | (board[1][2] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 2) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[1][2] = floorSign) & (next(move) = u) : box;
+		(whLocY = 3) & (whLocX = 2) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[1][2] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 1) & ((board[1][2] = floorSign) | (board[1][2] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 1) & (whLocX = 1) & ((board[1][2] = goal) | (board[1][2] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 0) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[1][2] = floorSign) & (next(move) = r) : box;
+		(whLocY = 1) & (whLocX = 0) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[1][2] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][2] = floorSign) | (board[1][2] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][2] = goal) | (board[1][2] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[1][2] = floorSign) & (next(move) = l) : box;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[1][2] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[1][2];
+	esac;
+
+	next(board[1][3]) := case
+		(whLocY = 1) & (whLocX = 3) & (board[1][3] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 1) & (whLocX = 3) & (board[1][3] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 0) & (whLocX = 3) & ((board[1][3] = floorSign) | (board[1][3] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 0) & (whLocX = 3) & ((board[1][3] = goal) | (board[1][3] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 3) & ((board[1][3] = floorSign) | (board[1][3] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 2) & (whLocX = 3) & ((board[1][3] = goal) | (board[1][3] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 3) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[1][3] = floorSign) & (next(move) = u) : box;
+		(whLocY = 3) & (whLocX = 3) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[1][3] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][3] = floorSign) | (board[1][3] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][3] = goal) | (board[1][3] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 1) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[1][3] = floorSign) & (next(move) = r) : box;
+		(whLocY = 1) & (whLocX = 1) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[1][3] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][3] = floorSign) | (board[1][3] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][3] = goal) | (board[1][3] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 5) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[1][3] = floorSign) & (next(move) = l) : box;
+		(whLocY = 1) & (whLocX = 5) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[1][3] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[1][3];
+	esac;
+
+	next(board[1][4]) := case
+		(whLocY = 1) & (whLocX = 4) & (board[1][4] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 1) & (whLocX = 4) & (board[1][4] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 0) & (whLocX = 4) & ((board[1][4] = floorSign) | (board[1][4] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 0) & (whLocX = 4) & ((board[1][4] = goal) | (board[1][4] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 4) & ((board[1][4] = floorSign) | (board[1][4] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 2) & (whLocX = 4) & ((board[1][4] = goal) | (board[1][4] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 4) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[1][4] = floorSign) & (next(move) = u) : box;
+		(whLocY = 3) & (whLocX = 4) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[1][4] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][4] = floorSign) | (board[1][4] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][4] = goal) | (board[1][4] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[1][4] = floorSign) & (next(move) = r) : box;
+		(whLocY = 1) & (whLocX = 2) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[1][4] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 5) & ((board[1][4] = floorSign) | (board[1][4] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 1) & (whLocX = 5) & ((board[1][4] = goal) | (board[1][4] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 6) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[1][4] = floorSign) & (next(move) = l) : box;
+		(whLocY = 1) & (whLocX = 6) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[1][4] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[1][4];
+	esac;
+
+	next(board[1][5]) := case
+		(whLocY = 1) & (whLocX = 5) & (board[1][5] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 1) & (whLocX = 5) & (board[1][5] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 0) & (whLocX = 5) & ((board[1][5] = floorSign) | (board[1][5] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 0) & (whLocX = 5) & ((board[1][5] = goal) | (board[1][5] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 5) & ((board[1][5] = floorSign) | (board[1][5] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 2) & (whLocX = 5) & ((board[1][5] = goal) | (board[1][5] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 5) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[1][5] = floorSign) & (next(move) = u) : box;
+		(whLocY = 3) & (whLocX = 5) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[1][5] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][5] = floorSign) | (board[1][5] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][5] = goal) | (board[1][5] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[1][5] = floorSign) & (next(move) = r) : box;
+		(whLocY = 1) & (whLocX = 3) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[1][5] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 6) & ((board[1][5] = floorSign) | (board[1][5] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 1) & (whLocX = 6) & ((board[1][5] = goal) | (board[1][5] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		TRUE : board[1][5];
+	esac;
+
+	next(board[1][6]) := case
+		(whLocY = 1) & (whLocX = 6) & (board[1][6] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 1) & (whLocX = 6) & (board[1][6] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 0) & (whLocX = 6) & ((board[1][6] = floorSign) | (board[1][6] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 0) & (whLocX = 6) & ((board[1][6] = goal) | (board[1][6] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 6) & ((board[1][6] = floorSign) | (board[1][6] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 2) & (whLocX = 6) & ((board[1][6] = goal) | (board[1][6] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 6) & ((board[2][6] = boxOnGoal) | (board[2][6] = box)) & (board[1][6] = floorSign) & (next(move) = u) : box;
+		(whLocY = 3) & (whLocX = 6) & ((board[2][6] = boxOnGoal) | (board[2][6] = box)) & (board[1][6] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 1) & (whLocX = 5) & ((board[1][6] = floorSign) | (board[1][6] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 1) & (whLocX = 5) & ((board[1][6] = goal) | (board[1][6] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[1][6] = floorSign) & (next(move) = r) : box;
+		(whLocY = 1) & (whLocX = 4) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[1][6] = goal) & (next(move) = r) : boxOnGoal;
+		TRUE : board[1][6];
+	esac;
+
+	next(board[2][0]) := case
+		(whLocY = 2) & (whLocX = 0) & (board[2][0] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 2) & (whLocX = 0) & (board[2][0] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 0) & ((board[2][0] = floorSign) | (board[2][0] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 1) & (whLocX = 0) & ((board[2][0] = goal) | (board[2][0] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 0) & ((board[1][0] = boxOnGoal) | (board[1][0] = box)) & (board[2][0] = floorSign) & (next(move) = d) : box;
+		(whLocY = 0) & (whLocX = 0) & ((board[1][0] = boxOnGoal) | (board[1][0] = box)) & (board[2][0]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 0) & ((board[2][0] = floorSign) | (board[2][0] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 3) & (whLocX = 0) & ((board[2][0] = goal) | (board[2][0] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 0) & ((board[3][0] = boxOnGoal) | (board[3][0] = box)) & (board[2][0] = floorSign) & (next(move) = u) : box;
+		(whLocY = 4) & (whLocX = 0) & ((board[3][0] = boxOnGoal) | (board[3][0] = box)) & (board[2][0] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 1) & ((board[2][0] = floorSign) | (board[2][0] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 2) & (whLocX = 1) & ((board[2][0] = goal) | (board[2][0] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[2][0] = floorSign) & (next(move) = l) : box;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[2][0] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[2][0];
+	esac;
+
+	next(board[2][1]) := case
+		(whLocY = 2) & (whLocX = 1) & (board[2][1] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 2) & (whLocX = 1) & (board[2][1] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 1) & ((board[2][1] = floorSign) | (board[2][1] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 1) & (whLocX = 1) & ((board[2][1] = goal) | (board[2][1] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 1) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[2][1] = floorSign) & (next(move) = d) : box;
+		(whLocY = 0) & (whLocX = 1) & ((board[1][1] = boxOnGoal) | (board[1][1] = box)) & (board[2][1]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 1) & ((board[2][1] = floorSign) | (board[2][1] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 3) & (whLocX = 1) & ((board[2][1] = goal) | (board[2][1] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 1) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[2][1] = floorSign) & (next(move) = u) : box;
+		(whLocY = 4) & (whLocX = 1) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[2][1] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 0) & ((board[2][1] = floorSign) | (board[2][1] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 2) & (whLocX = 0) & ((board[2][1] = goal) | (board[2][1] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][1] = floorSign) | (board[2][1] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][1] = goal) | (board[2][1] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[2][1] = floorSign) & (next(move) = l) : box;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[2][1] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[2][1];
+	esac;
+
+	next(board[2][2]) := case
+		(whLocY = 2) & (whLocX = 2) & (board[2][2] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 2) & (whLocX = 2) & (board[2][2] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 2) & ((board[2][2] = floorSign) | (board[2][2] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 1) & (whLocX = 2) & ((board[2][2] = goal) | (board[2][2] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 2) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[2][2] = floorSign) & (next(move) = d) : box;
+		(whLocY = 0) & (whLocX = 2) & ((board[1][2] = boxOnGoal) | (board[1][2] = box)) & (board[2][2]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 2) & ((board[2][2] = floorSign) | (board[2][2] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 3) & (whLocX = 2) & ((board[2][2] = goal) | (board[2][2] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 2) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[2][2] = floorSign) & (next(move) = u) : box;
+		(whLocY = 4) & (whLocX = 2) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[2][2] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 1) & ((board[2][2] = floorSign) | (board[2][2] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 2) & (whLocX = 1) & ((board[2][2] = goal) | (board[2][2] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 0) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[2][2] = floorSign) & (next(move) = r) : box;
+		(whLocY = 2) & (whLocX = 0) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[2][2] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][2] = floorSign) | (board[2][2] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][2] = goal) | (board[2][2] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[2][2] = floorSign) & (next(move) = l) : box;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[2][2] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[2][2];
+	esac;
+
+	next(board[2][3]) := case
+		(whLocY = 2) & (whLocX = 3) & (board[2][3] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 2) & (whLocX = 3) & (board[2][3] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 3) & ((board[2][3] = floorSign) | (board[2][3] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 1) & (whLocX = 3) & ((board[2][3] = goal) | (board[2][3] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 3) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[2][3] = floorSign) & (next(move) = d) : box;
+		(whLocY = 0) & (whLocX = 3) & ((board[1][3] = boxOnGoal) | (board[1][3] = box)) & (board[2][3]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 3) & ((board[2][3] = floorSign) | (board[2][3] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 3) & (whLocX = 3) & ((board[2][3] = goal) | (board[2][3] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 3) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[2][3] = floorSign) & (next(move) = u) : box;
+		(whLocY = 4) & (whLocX = 3) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[2][3] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][3] = floorSign) | (board[2][3] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][3] = goal) | (board[2][3] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 1) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[2][3] = floorSign) & (next(move) = r) : box;
+		(whLocY = 2) & (whLocX = 1) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[2][3] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][3] = floorSign) | (board[2][3] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][3] = goal) | (board[2][3] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 5) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[2][3] = floorSign) & (next(move) = l) : box;
+		(whLocY = 2) & (whLocX = 5) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[2][3] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[2][3];
+	esac;
+
+	next(board[2][4]) := case
+		(whLocY = 2) & (whLocX = 4) & (board[2][4] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 2) & (whLocX = 4) & (board[2][4] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 4) & ((board[2][4] = floorSign) | (board[2][4] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 1) & (whLocX = 4) & ((board[2][4] = goal) | (board[2][4] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 4) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[2][4] = floorSign) & (next(move) = d) : box;
+		(whLocY = 0) & (whLocX = 4) & ((board[1][4] = boxOnGoal) | (board[1][4] = box)) & (board[2][4]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 4) & ((board[2][4] = floorSign) | (board[2][4] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 3) & (whLocX = 4) & ((board[2][4] = goal) | (board[2][4] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 4) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[2][4] = floorSign) & (next(move) = u) : box;
+		(whLocY = 4) & (whLocX = 4) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[2][4] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][4] = floorSign) | (board[2][4] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][4] = goal) | (board[2][4] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[2][4] = floorSign) & (next(move) = r) : box;
+		(whLocY = 2) & (whLocX = 2) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[2][4] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 5) & ((board[2][4] = floorSign) | (board[2][4] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 2) & (whLocX = 5) & ((board[2][4] = goal) | (board[2][4] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 6) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[2][4] = floorSign) & (next(move) = l) : box;
+		(whLocY = 2) & (whLocX = 6) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[2][4] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[2][4];
+	esac;
+
+	next(board[2][5]) := case
+		(whLocY = 2) & (whLocX = 5) & (board[2][5] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 2) & (whLocX = 5) & (board[2][5] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 5) & ((board[2][5] = floorSign) | (board[2][5] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 1) & (whLocX = 5) & ((board[2][5] = goal) | (board[2][5] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 5) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[2][5] = floorSign) & (next(move) = d) : box;
+		(whLocY = 0) & (whLocX = 5) & ((board[1][5] = boxOnGoal) | (board[1][5] = box)) & (board[2][5]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 5) & ((board[2][5] = floorSign) | (board[2][5] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 3) & (whLocX = 5) & ((board[2][5] = goal) | (board[2][5] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 5) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[2][5] = floorSign) & (next(move) = u) : box;
+		(whLocY = 4) & (whLocX = 5) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[2][5] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][5] = floorSign) | (board[2][5] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][5] = goal) | (board[2][5] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[2][5] = floorSign) & (next(move) = r) : box;
+		(whLocY = 2) & (whLocX = 3) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[2][5] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 6) & ((board[2][5] = floorSign) | (board[2][5] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 2) & (whLocX = 6) & ((board[2][5] = goal) | (board[2][5] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		TRUE : board[2][5];
+	esac;
+
+	next(board[2][6]) := case
+		(whLocY = 2) & (whLocX = 6) & (board[2][6] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 2) & (whLocX = 6) & (board[2][6] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 1) & (whLocX = 6) & ((board[2][6] = floorSign) | (board[2][6] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 1) & (whLocX = 6) & ((board[2][6] = goal) | (board[2][6] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 0) & (whLocX = 6) & ((board[1][6] = boxOnGoal) | (board[1][6] = box)) & (board[2][6] = floorSign) & (next(move) = d) : box;
+		(whLocY = 0) & (whLocX = 6) & ((board[1][6] = boxOnGoal) | (board[1][6] = box)) & (board[2][6]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 6) & ((board[2][6] = floorSign) | (board[2][6] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 3) & (whLocX = 6) & ((board[2][6] = goal) | (board[2][6] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 6) & ((board[3][6] = boxOnGoal) | (board[3][6] = box)) & (board[2][6] = floorSign) & (next(move) = u) : box;
+		(whLocY = 4) & (whLocX = 6) & ((board[3][6] = boxOnGoal) | (board[3][6] = box)) & (board[2][6] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 2) & (whLocX = 5) & ((board[2][6] = floorSign) | (board[2][6] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 2) & (whLocX = 5) & ((board[2][6] = goal) | (board[2][6] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[2][6] = floorSign) & (next(move) = r) : box;
+		(whLocY = 2) & (whLocX = 4) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[2][6] = goal) & (next(move) = r) : boxOnGoal;
+		TRUE : board[2][6];
+	esac;
+
+	next(board[3][0]) := case
+		(whLocY = 3) & (whLocX = 0) & (board[3][0] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 3) & (whLocX = 0) & (board[3][0] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 2) & (whLocX = 0) & ((board[3][0] = floorSign) | (board[3][0] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 2) & (whLocX = 0) & ((board[3][0] = goal) | (board[3][0] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 0) & ((board[2][0] = boxOnGoal) | (board[2][0] = box)) & (board[3][0] = floorSign) & (next(move) = d) : box;
+		(whLocY = 1) & (whLocX = 0) & ((board[2][0] = boxOnGoal) | (board[2][0] = box)) & (board[3][0]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 0) & ((board[3][0] = floorSign) | (board[3][0] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 4) & (whLocX = 0) & ((board[3][0] = goal) | (board[3][0] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 0) & ((board[4][0] = boxOnGoal) | (board[4][0] = box)) & (board[3][0] = floorSign) & (next(move) = u) : box;
+		(whLocY = 5) & (whLocX = 0) & ((board[4][0] = boxOnGoal) | (board[4][0] = box)) & (board[3][0] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 1) & ((board[3][0] = floorSign) | (board[3][0] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 3) & (whLocX = 1) & ((board[3][0] = goal) | (board[3][0] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[3][0] = floorSign) & (next(move) = l) : box;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[3][0] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[3][0];
+	esac;
+
+	next(board[3][1]) := case
+		(whLocY = 3) & (whLocX = 1) & (board[3][1] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 3) & (whLocX = 1) & (board[3][1] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 2) & (whLocX = 1) & ((board[3][1] = floorSign) | (board[3][1] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 2) & (whLocX = 1) & ((board[3][1] = goal) | (board[3][1] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 1) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[3][1] = floorSign) & (next(move) = d) : box;
+		(whLocY = 1) & (whLocX = 1) & ((board[2][1] = boxOnGoal) | (board[2][1] = box)) & (board[3][1]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 1) & ((board[3][1] = floorSign) | (board[3][1] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 4) & (whLocX = 1) & ((board[3][1] = goal) | (board[3][1] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 1) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[3][1] = floorSign) & (next(move) = u) : box;
+		(whLocY = 5) & (whLocX = 1) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[3][1] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 0) & ((board[3][1] = floorSign) | (board[3][1] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 3) & (whLocX = 0) & ((board[3][1] = goal) | (board[3][1] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][1] = floorSign) | (board[3][1] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][1] = goal) | (board[3][1] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[3][1] = floorSign) & (next(move) = l) : box;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[3][1] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[3][1];
+	esac;
+
+	next(board[3][2]) := case
+		(whLocY = 3) & (whLocX = 2) & (board[3][2] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 3) & (whLocX = 2) & (board[3][2] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 2) & (whLocX = 2) & ((board[3][2] = floorSign) | (board[3][2] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 2) & (whLocX = 2) & ((board[3][2] = goal) | (board[3][2] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 2) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[3][2] = floorSign) & (next(move) = d) : box;
+		(whLocY = 1) & (whLocX = 2) & ((board[2][2] = boxOnGoal) | (board[2][2] = box)) & (board[3][2]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 2) & ((board[3][2] = floorSign) | (board[3][2] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 4) & (whLocX = 2) & ((board[3][2] = goal) | (board[3][2] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 2) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[3][2] = floorSign) & (next(move) = u) : box;
+		(whLocY = 5) & (whLocX = 2) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[3][2] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 1) & ((board[3][2] = floorSign) | (board[3][2] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 3) & (whLocX = 1) & ((board[3][2] = goal) | (board[3][2] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 0) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[3][2] = floorSign) & (next(move) = r) : box;
+		(whLocY = 3) & (whLocX = 0) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[3][2] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][2] = floorSign) | (board[3][2] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][2] = goal) | (board[3][2] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[3][2] = floorSign) & (next(move) = l) : box;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[3][2] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[3][2];
+	esac;
+
+	next(board[3][3]) := case
+		(whLocY = 3) & (whLocX = 3) & (board[3][3] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 3) & (whLocX = 3) & (board[3][3] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 2) & (whLocX = 3) & ((board[3][3] = floorSign) | (board[3][3] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 2) & (whLocX = 3) & ((board[3][3] = goal) | (board[3][3] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 3) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[3][3] = floorSign) & (next(move) = d) : box;
+		(whLocY = 1) & (whLocX = 3) & ((board[2][3] = boxOnGoal) | (board[2][3] = box)) & (board[3][3]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 3) & ((board[3][3] = floorSign) | (board[3][3] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 4) & (whLocX = 3) & ((board[3][3] = goal) | (board[3][3] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 3) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[3][3] = floorSign) & (next(move) = u) : box;
+		(whLocY = 5) & (whLocX = 3) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[3][3] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][3] = floorSign) | (board[3][3] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][3] = goal) | (board[3][3] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 1) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[3][3] = floorSign) & (next(move) = r) : box;
+		(whLocY = 3) & (whLocX = 1) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[3][3] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][3] = floorSign) | (board[3][3] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][3] = goal) | (board[3][3] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 5) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[3][3] = floorSign) & (next(move) = l) : box;
+		(whLocY = 3) & (whLocX = 5) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[3][3] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[3][3];
+	esac;
+
+	next(board[3][4]) := case
+		(whLocY = 3) & (whLocX = 4) & (board[3][4] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 3) & (whLocX = 4) & (board[3][4] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 2) & (whLocX = 4) & ((board[3][4] = floorSign) | (board[3][4] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 2) & (whLocX = 4) & ((board[3][4] = goal) | (board[3][4] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 4) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[3][4] = floorSign) & (next(move) = d) : box;
+		(whLocY = 1) & (whLocX = 4) & ((board[2][4] = boxOnGoal) | (board[2][4] = box)) & (board[3][4]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 4) & ((board[3][4] = floorSign) | (board[3][4] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 4) & (whLocX = 4) & ((board[3][4] = goal) | (board[3][4] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 4) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[3][4] = floorSign) & (next(move) = u) : box;
+		(whLocY = 5) & (whLocX = 4) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[3][4] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][4] = floorSign) | (board[3][4] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][4] = goal) | (board[3][4] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[3][4] = floorSign) & (next(move) = r) : box;
+		(whLocY = 3) & (whLocX = 2) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[3][4] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 5) & ((board[3][4] = floorSign) | (board[3][4] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 3) & (whLocX = 5) & ((board[3][4] = goal) | (board[3][4] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 6) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[3][4] = floorSign) & (next(move) = l) : box;
+		(whLocY = 3) & (whLocX = 6) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[3][4] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[3][4];
+	esac;
+
+	next(board[3][5]) := case
+		(whLocY = 3) & (whLocX = 5) & (board[3][5] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 3) & (whLocX = 5) & (board[3][5] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 2) & (whLocX = 5) & ((board[3][5] = floorSign) | (board[3][5] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 2) & (whLocX = 5) & ((board[3][5] = goal) | (board[3][5] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 5) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[3][5] = floorSign) & (next(move) = d) : box;
+		(whLocY = 1) & (whLocX = 5) & ((board[2][5] = boxOnGoal) | (board[2][5] = box)) & (board[3][5]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 5) & ((board[3][5] = floorSign) | (board[3][5] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 4) & (whLocX = 5) & ((board[3][5] = goal) | (board[3][5] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 5) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[3][5] = floorSign) & (next(move) = u) : box;
+		(whLocY = 5) & (whLocX = 5) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[3][5] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][5] = floorSign) | (board[3][5] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][5] = goal) | (board[3][5] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[3][5] = floorSign) & (next(move) = r) : box;
+		(whLocY = 3) & (whLocX = 3) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[3][5] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 6) & ((board[3][5] = floorSign) | (board[3][5] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 3) & (whLocX = 6) & ((board[3][5] = goal) | (board[3][5] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		TRUE : board[3][5];
+	esac;
+
+	next(board[3][6]) := case
+		(whLocY = 3) & (whLocX = 6) & (board[3][6] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 3) & (whLocX = 6) & (board[3][6] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 2) & (whLocX = 6) & ((board[3][6] = floorSign) | (board[3][6] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 2) & (whLocX = 6) & ((board[3][6] = goal) | (board[3][6] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 1) & (whLocX = 6) & ((board[2][6] = boxOnGoal) | (board[2][6] = box)) & (board[3][6] = floorSign) & (next(move) = d) : box;
+		(whLocY = 1) & (whLocX = 6) & ((board[2][6] = boxOnGoal) | (board[2][6] = box)) & (board[3][6]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 6) & ((board[3][6] = floorSign) | (board[3][6] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 4) & (whLocX = 6) & ((board[3][6] = goal) | (board[3][6] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 6) & ((board[4][6] = boxOnGoal) | (board[4][6] = box)) & (board[3][6] = floorSign) & (next(move) = u) : box;
+		(whLocY = 5) & (whLocX = 6) & ((board[4][6] = boxOnGoal) | (board[4][6] = box)) & (board[3][6] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 3) & (whLocX = 5) & ((board[3][6] = floorSign) | (board[3][6] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 3) & (whLocX = 5) & ((board[3][6] = goal) | (board[3][6] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[3][6] = floorSign) & (next(move) = r) : box;
+		(whLocY = 3) & (whLocX = 4) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[3][6] = goal) & (next(move) = r) : boxOnGoal;
+		TRUE : board[3][6];
+	esac;
+
+	next(board[4][0]) := case
+		(whLocY = 4) & (whLocX = 0) & (board[4][0] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 4) & (whLocX = 0) & (board[4][0] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 3) & (whLocX = 0) & ((board[4][0] = floorSign) | (board[4][0] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 3) & (whLocX = 0) & ((board[4][0] = goal) | (board[4][0] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 0) & ((board[3][0] = boxOnGoal) | (board[3][0] = box)) & (board[4][0] = floorSign) & (next(move) = d) : box;
+		(whLocY = 2) & (whLocX = 0) & ((board[3][0] = boxOnGoal) | (board[3][0] = box)) & (board[4][0]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 0) & ((board[4][0] = floorSign) | (board[4][0] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 5) & (whLocX = 0) & ((board[4][0] = goal) | (board[4][0] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 0) & ((board[5][0] = boxOnGoal) | (board[5][0] = box)) & (board[4][0] = floorSign) & (next(move) = u) : box;
+		(whLocY = 6) & (whLocX = 0) & ((board[5][0] = boxOnGoal) | (board[5][0] = box)) & (board[4][0] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 1) & ((board[4][0] = floorSign) | (board[4][0] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 4) & (whLocX = 1) & ((board[4][0] = goal) | (board[4][0] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[4][0] = floorSign) & (next(move) = l) : box;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[4][0] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[4][0];
+	esac;
+
+	next(board[4][1]) := case
+		(whLocY = 4) & (whLocX = 1) & (board[4][1] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 4) & (whLocX = 1) & (board[4][1] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 3) & (whLocX = 1) & ((board[4][1] = floorSign) | (board[4][1] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 3) & (whLocX = 1) & ((board[4][1] = goal) | (board[4][1] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 1) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[4][1] = floorSign) & (next(move) = d) : box;
+		(whLocY = 2) & (whLocX = 1) & ((board[3][1] = boxOnGoal) | (board[3][1] = box)) & (board[4][1]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 1) & ((board[4][1] = floorSign) | (board[4][1] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 5) & (whLocX = 1) & ((board[4][1] = goal) | (board[4][1] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 1) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[4][1] = floorSign) & (next(move) = u) : box;
+		(whLocY = 6) & (whLocX = 1) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[4][1] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 0) & ((board[4][1] = floorSign) | (board[4][1] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 4) & (whLocX = 0) & ((board[4][1] = goal) | (board[4][1] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][1] = floorSign) | (board[4][1] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][1] = goal) | (board[4][1] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[4][1] = floorSign) & (next(move) = l) : box;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[4][1] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[4][1];
+	esac;
+
+	next(board[4][2]) := case
+		(whLocY = 4) & (whLocX = 2) & (board[4][2] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 4) & (whLocX = 2) & (board[4][2] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 3) & (whLocX = 2) & ((board[4][2] = floorSign) | (board[4][2] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 3) & (whLocX = 2) & ((board[4][2] = goal) | (board[4][2] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 2) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[4][2] = floorSign) & (next(move) = d) : box;
+		(whLocY = 2) & (whLocX = 2) & ((board[3][2] = boxOnGoal) | (board[3][2] = box)) & (board[4][2]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 2) & ((board[4][2] = floorSign) | (board[4][2] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 5) & (whLocX = 2) & ((board[4][2] = goal) | (board[4][2] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 2) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[4][2] = floorSign) & (next(move) = u) : box;
+		(whLocY = 6) & (whLocX = 2) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[4][2] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 1) & ((board[4][2] = floorSign) | (board[4][2] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 4) & (whLocX = 1) & ((board[4][2] = goal) | (board[4][2] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 0) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[4][2] = floorSign) & (next(move) = r) : box;
+		(whLocY = 4) & (whLocX = 0) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[4][2] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][2] = floorSign) | (board[4][2] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][2] = goal) | (board[4][2] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[4][2] = floorSign) & (next(move) = l) : box;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[4][2] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[4][2];
+	esac;
+
+	next(board[4][3]) := case
+		(whLocY = 4) & (whLocX = 3) & (board[4][3] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 4) & (whLocX = 3) & (board[4][3] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 3) & (whLocX = 3) & ((board[4][3] = floorSign) | (board[4][3] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 3) & (whLocX = 3) & ((board[4][3] = goal) | (board[4][3] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 3) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[4][3] = floorSign) & (next(move) = d) : box;
+		(whLocY = 2) & (whLocX = 3) & ((board[3][3] = boxOnGoal) | (board[3][3] = box)) & (board[4][3]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 3) & ((board[4][3] = floorSign) | (board[4][3] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 5) & (whLocX = 3) & ((board[4][3] = goal) | (board[4][3] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 3) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[4][3] = floorSign) & (next(move) = u) : box;
+		(whLocY = 6) & (whLocX = 3) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[4][3] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][3] = floorSign) | (board[4][3] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][3] = goal) | (board[4][3] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 1) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[4][3] = floorSign) & (next(move) = r) : box;
+		(whLocY = 4) & (whLocX = 1) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[4][3] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][3] = floorSign) | (board[4][3] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][3] = goal) | (board[4][3] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 5) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[4][3] = floorSign) & (next(move) = l) : box;
+		(whLocY = 4) & (whLocX = 5) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[4][3] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[4][3];
+	esac;
+
+	next(board[4][4]) := case
+		(whLocY = 4) & (whLocX = 4) & (board[4][4] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 4) & (whLocX = 4) & (board[4][4] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 3) & (whLocX = 4) & ((board[4][4] = floorSign) | (board[4][4] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 3) & (whLocX = 4) & ((board[4][4] = goal) | (board[4][4] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 4) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[4][4] = floorSign) & (next(move) = d) : box;
+		(whLocY = 2) & (whLocX = 4) & ((board[3][4] = boxOnGoal) | (board[3][4] = box)) & (board[4][4]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 4) & ((board[4][4] = floorSign) | (board[4][4] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 5) & (whLocX = 4) & ((board[4][4] = goal) | (board[4][4] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 4) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[4][4] = floorSign) & (next(move) = u) : box;
+		(whLocY = 6) & (whLocX = 4) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[4][4] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][4] = floorSign) | (board[4][4] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][4] = goal) | (board[4][4] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[4][4] = floorSign) & (next(move) = r) : box;
+		(whLocY = 4) & (whLocX = 2) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[4][4] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 5) & ((board[4][4] = floorSign) | (board[4][4] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 4) & (whLocX = 5) & ((board[4][4] = goal) | (board[4][4] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 6) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[4][4] = floorSign) & (next(move) = l) : box;
+		(whLocY = 4) & (whLocX = 6) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[4][4] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[4][4];
+	esac;
+
+	next(board[4][5]) := case
+		(whLocY = 4) & (whLocX = 5) & (board[4][5] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 4) & (whLocX = 5) & (board[4][5] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 3) & (whLocX = 5) & ((board[4][5] = floorSign) | (board[4][5] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 3) & (whLocX = 5) & ((board[4][5] = goal) | (board[4][5] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 5) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[4][5] = floorSign) & (next(move) = d) : box;
+		(whLocY = 2) & (whLocX = 5) & ((board[3][5] = boxOnGoal) | (board[3][5] = box)) & (board[4][5]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 5) & ((board[4][5] = floorSign) | (board[4][5] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 5) & (whLocX = 5) & ((board[4][5] = goal) | (board[4][5] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 5) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[4][5] = floorSign) & (next(move) = u) : box;
+		(whLocY = 6) & (whLocX = 5) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[4][5] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][5] = floorSign) | (board[4][5] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][5] = goal) | (board[4][5] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[4][5] = floorSign) & (next(move) = r) : box;
+		(whLocY = 4) & (whLocX = 3) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[4][5] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 6) & ((board[4][5] = floorSign) | (board[4][5] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 4) & (whLocX = 6) & ((board[4][5] = goal) | (board[4][5] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		TRUE : board[4][5];
+	esac;
+
+	next(board[4][6]) := case
+		(whLocY = 4) & (whLocX = 6) & (board[4][6] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 4) & (whLocX = 6) & (board[4][6] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 3) & (whLocX = 6) & ((board[4][6] = floorSign) | (board[4][6] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 3) & (whLocX = 6) & ((board[4][6] = goal) | (board[4][6] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 2) & (whLocX = 6) & ((board[3][6] = boxOnGoal) | (board[3][6] = box)) & (board[4][6] = floorSign) & (next(move) = d) : box;
+		(whLocY = 2) & (whLocX = 6) & ((board[3][6] = boxOnGoal) | (board[3][6] = box)) & (board[4][6]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 6) & ((board[4][6] = floorSign) | (board[4][6] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 5) & (whLocX = 6) & ((board[4][6] = goal) | (board[4][6] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 6) & ((board[5][6] = boxOnGoal) | (board[5][6] = box)) & (board[4][6] = floorSign) & (next(move) = u) : box;
+		(whLocY = 6) & (whLocX = 6) & ((board[5][6] = boxOnGoal) | (board[5][6] = box)) & (board[4][6] = goal) & (next(move) = u) : boxOnGoal;
+		(whLocY = 4) & (whLocX = 5) & ((board[4][6] = floorSign) | (board[4][6] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 4) & (whLocX = 5) & ((board[4][6] = goal) | (board[4][6] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[4][6] = floorSign) & (next(move) = r) : box;
+		(whLocY = 4) & (whLocX = 4) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[4][6] = goal) & (next(move) = r) : boxOnGoal;
+		TRUE : board[4][6];
+	esac;
+
+	next(board[5][0]) := case
+		(whLocY = 5) & (whLocX = 0) & (board[5][0] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 5) & (whLocX = 0) & (board[5][0] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 4) & (whLocX = 0) & ((board[5][0] = floorSign) | (board[5][0] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 4) & (whLocX = 0) & ((board[5][0] = goal) | (board[5][0] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 0) & ((board[4][0] = boxOnGoal) | (board[4][0] = box)) & (board[5][0] = floorSign) & (next(move) = d) : box;
+		(whLocY = 3) & (whLocX = 0) & ((board[4][0] = boxOnGoal) | (board[4][0] = box)) & (board[5][0]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 0) & ((board[5][0] = floorSign) | (board[5][0] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 6) & (whLocX = 0) & ((board[5][0] = goal) | (board[5][0] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 1) & ((board[5][0] = floorSign) | (board[5][0] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 5) & (whLocX = 1) & ((board[5][0] = goal) | (board[5][0] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[5][0] = floorSign) & (next(move) = l) : box;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[5][0] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[5][0];
+	esac;
+
+	next(board[5][1]) := case
+		(whLocY = 5) & (whLocX = 1) & (board[5][1] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 5) & (whLocX = 1) & (board[5][1] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 4) & (whLocX = 1) & ((board[5][1] = floorSign) | (board[5][1] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 4) & (whLocX = 1) & ((board[5][1] = goal) | (board[5][1] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 1) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[5][1] = floorSign) & (next(move) = d) : box;
+		(whLocY = 3) & (whLocX = 1) & ((board[4][1] = boxOnGoal) | (board[4][1] = box)) & (board[5][1]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 1) & ((board[5][1] = floorSign) | (board[5][1] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 6) & (whLocX = 1) & ((board[5][1] = goal) | (board[5][1] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 0) & ((board[5][1] = floorSign) | (board[5][1] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 5) & (whLocX = 0) & ((board[5][1] = goal) | (board[5][1] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][1] = floorSign) | (board[5][1] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][1] = goal) | (board[5][1] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[5][1] = floorSign) & (next(move) = l) : box;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[5][1] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[5][1];
+	esac;
+
+	next(board[5][2]) := case
+		(whLocY = 5) & (whLocX = 2) & (board[5][2] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 5) & (whLocX = 2) & (board[5][2] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 4) & (whLocX = 2) & ((board[5][2] = floorSign) | (board[5][2] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 4) & (whLocX = 2) & ((board[5][2] = goal) | (board[5][2] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 2) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[5][2] = floorSign) & (next(move) = d) : box;
+		(whLocY = 3) & (whLocX = 2) & ((board[4][2] = boxOnGoal) | (board[4][2] = box)) & (board[5][2]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 2) & ((board[5][2] = floorSign) | (board[5][2] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 6) & (whLocX = 2) & ((board[5][2] = goal) | (board[5][2] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 1) & ((board[5][2] = floorSign) | (board[5][2] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 5) & (whLocX = 1) & ((board[5][2] = goal) | (board[5][2] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 0) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[5][2] = floorSign) & (next(move) = r) : box;
+		(whLocY = 5) & (whLocX = 0) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[5][2] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][2] = floorSign) | (board[5][2] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][2] = goal) | (board[5][2] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[5][2] = floorSign) & (next(move) = l) : box;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[5][2] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[5][2];
+	esac;
+
+	next(board[5][3]) := case
+		(whLocY = 5) & (whLocX = 3) & (board[5][3] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 5) & (whLocX = 3) & (board[5][3] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 4) & (whLocX = 3) & ((board[5][3] = floorSign) | (board[5][3] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 4) & (whLocX = 3) & ((board[5][3] = goal) | (board[5][3] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 3) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[5][3] = floorSign) & (next(move) = d) : box;
+		(whLocY = 3) & (whLocX = 3) & ((board[4][3] = boxOnGoal) | (board[4][3] = box)) & (board[5][3]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 3) & ((board[5][3] = floorSign) | (board[5][3] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 6) & (whLocX = 3) & ((board[5][3] = goal) | (board[5][3] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][3] = floorSign) | (board[5][3] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][3] = goal) | (board[5][3] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 1) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[5][3] = floorSign) & (next(move) = r) : box;
+		(whLocY = 5) & (whLocX = 1) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[5][3] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][3] = floorSign) | (board[5][3] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][3] = goal) | (board[5][3] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 5) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[5][3] = floorSign) & (next(move) = l) : box;
+		(whLocY = 5) & (whLocX = 5) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[5][3] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[5][3];
+	esac;
+
+	next(board[5][4]) := case
+		(whLocY = 5) & (whLocX = 4) & (board[5][4] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 5) & (whLocX = 4) & (board[5][4] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 4) & (whLocX = 4) & ((board[5][4] = floorSign) | (board[5][4] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 4) & (whLocX = 4) & ((board[5][4] = goal) | (board[5][4] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 4) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[5][4] = floorSign) & (next(move) = d) : box;
+		(whLocY = 3) & (whLocX = 4) & ((board[4][4] = boxOnGoal) | (board[4][4] = box)) & (board[5][4]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 4) & ((board[5][4] = floorSign) | (board[5][4] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 6) & (whLocX = 4) & ((board[5][4] = goal) | (board[5][4] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][4] = floorSign) | (board[5][4] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][4] = goal) | (board[5][4] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[5][4] = floorSign) & (next(move) = r) : box;
+		(whLocY = 5) & (whLocX = 2) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[5][4] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 5) & ((board[5][4] = floorSign) | (board[5][4] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 5) & (whLocX = 5) & ((board[5][4] = goal) | (board[5][4] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 6) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[5][4] = floorSign) & (next(move) = l) : box;
+		(whLocY = 5) & (whLocX = 6) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[5][4] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[5][4];
+	esac;
+
+	next(board[5][5]) := case
+		(whLocY = 5) & (whLocX = 5) & (board[5][5] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 5) & (whLocX = 5) & (board[5][5] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 4) & (whLocX = 5) & ((board[5][5] = floorSign) | (board[5][5] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 4) & (whLocX = 5) & ((board[5][5] = goal) | (board[5][5] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 5) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[5][5] = floorSign) & (next(move) = d) : box;
+		(whLocY = 3) & (whLocX = 5) & ((board[4][5] = boxOnGoal) | (board[4][5] = box)) & (board[5][5]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 5) & ((board[5][5] = floorSign) | (board[5][5] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 6) & (whLocX = 5) & ((board[5][5] = goal) | (board[5][5] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][5] = floorSign) | (board[5][5] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][5] = goal) | (board[5][5] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[5][5] = floorSign) & (next(move) = r) : box;
+		(whLocY = 5) & (whLocX = 3) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[5][5] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 5) & (whLocX = 6) & ((board[5][5] = floorSign) | (board[5][5] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 5) & (whLocX = 6) & ((board[5][5] = goal) | (board[5][5] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		TRUE : board[5][5];
+	esac;
+
+	next(board[5][6]) := case
+		(whLocY = 5) & (whLocX = 6) & (board[5][6] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 5) & (whLocX = 6) & (board[5][6] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 4) & (whLocX = 6) & ((board[5][6] = floorSign) | (board[5][6] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 4) & (whLocX = 6) & ((board[5][6] = goal) | (board[5][6] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 3) & (whLocX = 6) & ((board[4][6] = boxOnGoal) | (board[4][6] = box)) & (board[5][6] = floorSign) & (next(move) = d) : box;
+		(whLocY = 3) & (whLocX = 6) & ((board[4][6] = boxOnGoal) | (board[4][6] = box)) & (board[5][6]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 6) & ((board[5][6] = floorSign) | (board[5][6] = box)) & (next(move) = u) : whKeeper;
+		(whLocY = 6) & (whLocX = 6) & ((board[5][6] = goal) | (board[5][6] = boxOnGoal)) & (next(move) = u) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 5) & ((board[5][6] = floorSign) | (board[5][6] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 5) & (whLocX = 5) & ((board[5][6] = goal) | (board[5][6] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[5][6] = floorSign) & (next(move) = r) : box;
+		(whLocY = 5) & (whLocX = 4) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[5][6] = goal) & (next(move) = r) : boxOnGoal;
+		TRUE : board[5][6];
+	esac;
+
+	next(board[6][0]) := case
+		(whLocY = 6) & (whLocX = 0) & (board[6][0] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 6) & (whLocX = 0) & (board[6][0] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 5) & (whLocX = 0) & ((board[6][0] = floorSign) | (board[6][0] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 5) & (whLocX = 0) & ((board[6][0] = goal) | (board[6][0] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 0) & ((board[5][0] = boxOnGoal) | (board[5][0] = box)) & (board[6][0] = floorSign) & (next(move) = d) : box;
+		(whLocY = 4) & (whLocX = 0) & ((board[5][0] = boxOnGoal) | (board[5][0] = box)) & (board[6][0]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 1) & ((board[6][0] = floorSign) | (board[6][0] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 6) & (whLocX = 1) & ((board[6][0] = goal) | (board[6][0] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][1] = boxOnGoal) | (board[6][1] = box)) & (board[6][0] = floorSign) & (next(move) = l) : box;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][1] = boxOnGoal) | (board[6][1] = box)) & (board[6][0] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[6][0];
+	esac;
+
+	next(board[6][1]) := case
+		(whLocY = 6) & (whLocX = 1) & (board[6][1] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 6) & (whLocX = 1) & (board[6][1] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 5) & (whLocX = 1) & ((board[6][1] = floorSign) | (board[6][1] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 5) & (whLocX = 1) & ((board[6][1] = goal) | (board[6][1] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 1) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[6][1] = floorSign) & (next(move) = d) : box;
+		(whLocY = 4) & (whLocX = 1) & ((board[5][1] = boxOnGoal) | (board[5][1] = box)) & (board[6][1]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 0) & ((board[6][1] = floorSign) | (board[6][1] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 6) & (whLocX = 0) & ((board[6][1] = goal) | (board[6][1] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][1] = floorSign) | (board[6][1] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][1] = goal) | (board[6][1] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][2] = boxOnGoal) | (board[6][2] = box)) & (board[6][1] = floorSign) & (next(move) = l) : box;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][2] = boxOnGoal) | (board[6][2] = box)) & (board[6][1] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[6][1];
+	esac;
+
+	next(board[6][2]) := case
+		(whLocY = 6) & (whLocX = 2) & (board[6][2] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 6) & (whLocX = 2) & (board[6][2] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 5) & (whLocX = 2) & ((board[6][2] = floorSign) | (board[6][2] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 5) & (whLocX = 2) & ((board[6][2] = goal) | (board[6][2] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 2) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[6][2] = floorSign) & (next(move) = d) : box;
+		(whLocY = 4) & (whLocX = 2) & ((board[5][2] = boxOnGoal) | (board[5][2] = box)) & (board[6][2]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 1) & ((board[6][2] = floorSign) | (board[6][2] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 6) & (whLocX = 1) & ((board[6][2] = goal) | (board[6][2] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 0) & ((board[6][1] = boxOnGoal) | (board[6][1] = box)) & (board[6][2] = floorSign) & (next(move) = r) : box;
+		(whLocY = 6) & (whLocX = 0) & ((board[6][1] = boxOnGoal) | (board[6][1] = box)) & (board[6][2] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][2] = floorSign) | (board[6][2] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][2] = goal) | (board[6][2] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][3] = boxOnGoal) | (board[6][3] = box)) & (board[6][2] = floorSign) & (next(move) = l) : box;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][3] = boxOnGoal) | (board[6][3] = box)) & (board[6][2] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[6][2];
+	esac;
+
+	next(board[6][3]) := case
+		(whLocY = 6) & (whLocX = 3) & (board[6][3] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 6) & (whLocX = 3) & (board[6][3] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 5) & (whLocX = 3) & ((board[6][3] = floorSign) | (board[6][3] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 5) & (whLocX = 3) & ((board[6][3] = goal) | (board[6][3] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 3) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[6][3] = floorSign) & (next(move) = d) : box;
+		(whLocY = 4) & (whLocX = 3) & ((board[5][3] = boxOnGoal) | (board[5][3] = box)) & (board[6][3]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][3] = floorSign) | (board[6][3] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][3] = goal) | (board[6][3] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 1) & ((board[6][2] = boxOnGoal) | (board[6][2] = box)) & (board[6][3] = floorSign) & (next(move) = r) : box;
+		(whLocY = 6) & (whLocX = 1) & ((board[6][2] = boxOnGoal) | (board[6][2] = box)) & (board[6][3] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][3] = floorSign) | (board[6][3] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][3] = goal) | (board[6][3] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 5) & ((board[6][4] = boxOnGoal) | (board[6][4] = box)) & (board[6][3] = floorSign) & (next(move) = l) : box;
+		(whLocY = 6) & (whLocX = 5) & ((board[6][4] = boxOnGoal) | (board[6][4] = box)) & (board[6][3] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[6][3];
+	esac;
+
+	next(board[6][4]) := case
+		(whLocY = 6) & (whLocX = 4) & (board[6][4] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 6) & (whLocX = 4) & (board[6][4] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 5) & (whLocX = 4) & ((board[6][4] = floorSign) | (board[6][4] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 5) & (whLocX = 4) & ((board[6][4] = goal) | (board[6][4] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 4) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[6][4] = floorSign) & (next(move) = d) : box;
+		(whLocY = 4) & (whLocX = 4) & ((board[5][4] = boxOnGoal) | (board[5][4] = box)) & (board[6][4]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][4] = floorSign) | (board[6][4] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][4] = goal) | (board[6][4] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][3] = boxOnGoal) | (board[6][3] = box)) & (board[6][4] = floorSign) & (next(move) = r) : box;
+		(whLocY = 6) & (whLocX = 2) & ((board[6][3] = boxOnGoal) | (board[6][3] = box)) & (board[6][4] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 5) & ((board[6][4] = floorSign) | (board[6][4] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 6) & (whLocX = 5) & ((board[6][4] = goal) | (board[6][4] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 6) & ((board[6][5] = boxOnGoal) | (board[6][5] = box)) & (board[6][4] = floorSign) & (next(move) = l) : box;
+		(whLocY = 6) & (whLocX = 6) & ((board[6][5] = boxOnGoal) | (board[6][5] = box)) & (board[6][4] = goal) & (next(move) = l) : boxOnGoal;
+		TRUE : board[6][4];
+	esac;
+
+	next(board[6][5]) := case
+		(whLocY = 6) & (whLocX = 5) & (board[6][5] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 6) & (whLocX = 5) & (board[6][5] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 5) & (whLocX = 5) & ((board[6][5] = floorSign) | (board[6][5] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 5) & (whLocX = 5) & ((board[6][5] = goal) | (board[6][5] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 5) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[6][5] = floorSign) & (next(move) = d) : box;
+		(whLocY = 4) & (whLocX = 5) & ((board[5][5] = boxOnGoal) | (board[5][5] = box)) & (board[6][5]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][5] = floorSign) | (board[6][5] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][5] = goal) | (board[6][5] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][4] = boxOnGoal) | (board[6][4] = box)) & (board[6][5] = floorSign) & (next(move) = r) : box;
+		(whLocY = 6) & (whLocX = 3) & ((board[6][4] = boxOnGoal) | (board[6][4] = box)) & (board[6][5] = goal) & (next(move) = r) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 6) & ((board[6][5] = floorSign) | (board[6][5] = box)) & (next(move) = l) : whKeeper;
+		(whLocY = 6) & (whLocX = 6) & ((board[6][5] = goal) | (board[6][5] = boxOnGoal)) & (next(move) = l) : whKeeperOnGoal;
+		TRUE : board[6][5];
+	esac;
+
+	next(board[6][6]) := case
+		(whLocY = 6) & (whLocX = 6) & (board[6][6] = whKeeper) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : floorSign;
+		(whLocY = 6) & (whLocX = 6) & (board[6][6] = whKeeperOnGoal) & (next(move) = l | next(move) = u | next(move) = r | next(move) = d) : goal;
+		(whLocY = 5) & (whLocX = 6) & ((board[6][6] = floorSign) | (board[6][6] = box)) & (next(move) = d) : whKeeper;
+		(whLocY = 5) & (whLocX = 6) & ((board[6][6] = goal) | (board[6][6] = boxOnGoal)) & (next(move) = d) : whKeeperOnGoal;
+		(whLocY = 4) & (whLocX = 6) & ((board[5][6] = boxOnGoal) | (board[5][6] = box)) & (board[6][6] = floorSign) & (next(move) = d) : box;
+		(whLocY = 4) & (whLocX = 6) & ((board[5][6] = boxOnGoal) | (board[5][6] = box)) & (board[6][6]= goal) & (next(move) = d) : boxOnGoal;
+		(whLocY = 6) & (whLocX = 5) & ((board[6][6] = floorSign) | (board[6][6] = box)) & (next(move) = r) : whKeeper;
+		(whLocY = 6) & (whLocX = 5) & ((board[6][6] = goal) | (board[6][6] = boxOnGoal)) & (next(move) = r) : whKeeperOnGoal;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][5] = boxOnGoal) | (board[6][5] = box)) & (board[6][6] = floorSign) & (next(move) = r) : box;
+		(whLocY = 6) & (whLocX = 4) & ((board[6][5] = boxOnGoal) | (board[6][5] = box)) & (board[6][6] = goal) & (next(move) = r) : boxOnGoal;
+		TRUE : board[6][6];
+	esac;
+
+	next(numCurrentGoals) := case
+		(board[1][3] = boxOnGoal & board[3][1] = boxOnGoal & board[3][5] = boxOnGoal & board[5][3] = boxOnGoal) : 0;
+		(board[1][3] = boxOnGoal & board[3][1] = boxOnGoal & board[3][5] = boxOnGoal) : 1;
+		(board[1][3] = boxOnGoal & board[3][1] = boxOnGoal & board[5][3] = boxOnGoal) : 1;
+		(board[1][3] = boxOnGoal & board[3][5] = boxOnGoal & board[5][3] = boxOnGoal) : 1;
+		(board[3][1] = boxOnGoal & board[3][5] = boxOnGoal & board[5][3] = boxOnGoal) : 1;
+		(board[1][3] = boxOnGoal & board[3][1] = boxOnGoal) : 2;
+		(board[1][3] = boxOnGoal & board[3][5] = boxOnGoal) : 2;
+		(board[1][3] = boxOnGoal & board[5][3] = boxOnGoal) : 2;
+		(board[3][1] = boxOnGoal & board[3][5] = boxOnGoal) : 2;
+		(board[3][1] = boxOnGoal & board[5][3] = boxOnGoal) : 2;
+		(board[3][5] = boxOnGoal & board[5][3] = boxOnGoal) : 2;
+		(board[1][3] = boxOnGoal) : 3;
+		(board[3][1] = boxOnGoal) : 3;
+		(board[3][5] = boxOnGoal) : 3;
+		(board[5][3] = boxOnGoal) : 3;
+		TRUE : numOriginalGoals;
+	esac;
+
+LTLSPEC !F(numCurrentGoals < numOriginalGoals)

@@ -1,0 +1,8 @@
+***********************
+* PART 3 - Summary *
+***********************
+
+SokobanBoard1 is winnable with BDD Solver Engine in 0.12357640266418457 seconds, and the winning solution (LURD Format) is: r, while with SAT Solver Engine it is winnable in 0.08974647521972656 seconds, and the winning solution (LURD Format) is: r.
+SokobanBoard4 is winnable with BDD Solver Engine in 1.143493413925171 seconds, and the winning solution (LURD Format) is: uddulrr, while with SAT Solver Engine it is winnable in 0.9597315788269043 seconds, and the winning solution (LURD Format) is: lrduudr.
+SokobanBoard7 is winnable with BDD Solver Engine in 239.68735694885254 seconds, and the winning solution (LURD Format) is: llurrrrrdru, while with SAT Solver Engine it is winnable in 10.748875856399536 seconds, and the winning solution (LURD Format) is: llurrrrrdru.
+SokobanBoard8 is winnable with BDD Solver Engine in 444.9276556968689 seconds, and the winning solution (LURD Format) is: luuurrllddrrrrdrudddd, while with SAT Solver Engine it is winnable in 88.23116612434387 seconds, and the winning solution (LURD Format) is: luuurrllddrrrrdrudddd.

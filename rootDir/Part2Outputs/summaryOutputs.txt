@@ -1,0 +1,11 @@
+***********************
+* PART 2 - Summary *
+***********************
+
+SokobanBoard1 is winnable. The winning solution (LURD Format): r.
+SokobanBoard2 is not winnable.
+SokobanBoard3 is not winnable.
+SokobanBoard4 is winnable. The winning solution (LURD Format): uddulrr.
+SokobanBoard5 is not winnable.
+SokobanBoard6 is not winnable.
+SokobanBoard7 is winnable. The winning solution (LURD Format): llurrrrrdru.
