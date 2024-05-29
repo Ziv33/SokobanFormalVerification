@@ -296,7 +296,7 @@ def runIterativeNuXmvPart4(part4XSBDir, part4SMVDir, rootDir):
 
 def main():
     # The user have to create these directories, and insert to the XSBDir-s the XSB Sokoban boards before running this program.
-    rootDir = 'rootDir/'  # Should be named as something like rootDir
+    rootDir = 'rootDir/'  # Root directory - in the same directory as the python files and nuXmv.exe file.
 
     # Part 2:
     part2XSBDir = "rootDir/part2XSBDir"  # The XSB format of given boards.
