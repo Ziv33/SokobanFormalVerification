@@ -39,7 +39,7 @@ Installation can be done in two ways:
 
 In any case, you need to locate the two Python files in the same directory with ```nuXmv.exe```, and rootDir directory.
 
-Inside the rootDir directory, you need to have three directories - ```part2XSBDir/```, ```part3XSBDir/``` and ```part4XSBDir```, in which the XSB Sokoban boards files should be.
+Inside the rootDir directory, you need to have three directories - ```part2XSBDir/```, ```part3XSBDir/``` and ```part4XSBDir/```, in which the XSB Sokoban boards files should be.
 
 In addition, you need to have the python3 libraries- ```os```, ```subprocess```, ```time```, ```re``` and ```itertools```.
 
